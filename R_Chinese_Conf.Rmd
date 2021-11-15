@@ -145,7 +145,7 @@ df1 <- data.frame(
 htmlwidgets:::toJSON(df1)
 ```
 
-<img src="www/R_JSON.PNG" align="left"/>
+<img src="www/R_JSON.png" align="left"/>
 
 ---
 class: middle
