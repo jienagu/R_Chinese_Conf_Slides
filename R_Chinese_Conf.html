@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>徒手开发零依赖 Htmlwidgets R 包</title>
+    <meta charset="utf-8" />
+    <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+    <link href="libs/faq-0.1.0/style.css" rel="stylesheet" />
+    <script src="libs/faq-binding-0.1.1/faq.js"></script>
+    <link rel="stylesheet" href="mckpam.css" type="text/css" />
+    <link rel="stylesheet" href="zh-CN.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 徒手开发零依赖 Htmlwidgets R 包
+## 古杰娜
+### 软件架构师 麦肯锡咨询公司
+### 2021/11/12
+
+---
+
+class: middle
+
+# Htmlwidgets R 包
+
+--
+### 提供了R语言链接Javascript库的接口
+
+--
+### 方便和丰富了R Markdown文档和Shiny Web应用程序的开发和共享分析成果
+
+--
+### 比如目前流行的 leaflet， plotly，等等
+
+---
+
+# 例子1: `faq`  &lt;img src="www/faq_logo.png"  width="160px" align="right"/&gt;
+
+Github repo: https://github.com/jienagu/faq
+
+
+```r
+library(faq)
+df &lt;- data.frame(
+  question = c("Question1", "Question2", "Question3"),
+  answer = c("answer for &lt;b&gt;question1&lt;/b&gt;", 
+             "question2 answer", 
+             "answer3")
+)
+print(df)
+```
+
+```
+##    question                      answer
+## 1 Question1 answer for &lt;b&gt;question1&lt;/b&gt;
+## 2 Question2            question2 answer
+## 3 Question3                     answer3
+```
+
+---
+
+# 例子1: `faq`  &lt;img src="www/faq_logo.png"  width="160px" align="right"/&gt;
+
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/faq)](https://cran.r-project.org/package=faq)
+
+
+```r
+faq::faq(data = df, elementId = "faq",
+         faqtitle = "FAQs")
+```
+
+<div id="faq" style="width:504px;height:60%;" class="faq html-widget"></div>
+<script type="application/json" data-for="faq">{"x":{"data":{"question":["Question1","Question2","Question3"],"answer":["answer for <b>question1<\/b>","question2 answer","answer3"]},"faqtitle":"FAQs","expand_all_button_text":"+ Expand All","collapse_all_button_text":"- Collapse All","content_background_color":"white"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# 例子2: `flashCard`  &lt;img src="www/flashCard_hex.png"  width="160px" align="right"/&gt;
+
+Github repo: https://github.com/jienagu/flashCard
+
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/flashCard)](https://cran.r-project.org/package=flashCard)
+
+
+```r
+library(flashCard)
+df1 &lt;- data.frame(
+  front = c("Title front",
+            "contentfront", 
+            "content second line"),
+  back =c("Title back",
+          "content back", 
+          "second line")
+)
+flashCard(df1, elementId = "card", 
+          front_text_color = "white")
+```
+
+&lt;img src="www/flashCard.gif"/&gt;
+
+*更多例子： https://www.htmlwidgets.org/*
+
+---
+class: middle
+
+# Htmlwidgets 架构
+
+&lt;img src="www/forestry_intro.png"/&gt;
+
+*注：`forestry` 包（https://github.com/jienagu/forestry）是用于重塑更复杂的内嵌式的 JSON*
+
+---
+class: middle
+
+# 开发流程 
+
+1. 前端开发：https://codepen.io/Jienagu/pen/qBdNbVy
+2. 摘取相应的 JSON 数据格式
+3. 转换 JSON 到 R 环境  
+4. 用 htmlwidgets R 包(https://cran.r-project.org/web/packages/htmlwidgets/index.html) 建立基本框架
+5. 把开发好的前端代码 （js， css）放到 inst/htmlwidgets/lib 目录里 （https://github.com/jienagu/faq/tree/master/inst/htmlwidgets）
+6. 建立 R 数据链接 （https://github.com/jienagu/faq/blob/master/inst/htmlwidgets/faq.js#L25）
+7. 写测试
+
+---
+class: middle
+
+# 开发流程 (从 JSON 到 R 数据)
+
+JSON 数据：
+
+
+```js
+var jsonData = {
+	"front": ["Title front", "contentfront", "content second line"],
+	"back": ["Title back", "&lt;b&gt;content back&lt;/b&gt;", ""]
+}
+```
+
+R 环境：
+
+```r
+data.frame(rjson::fromJSON('{
+	"front": ["Title front", "contentfront", "content second line"],
+	"back": ["Title back", "&lt;b&gt;content back&lt;/b&gt;", ""]
+}'))
+```
+
+```
+##                 front                back
+## 1         Title front          Title back
+## 2        contentfront &lt;b&gt;content back&lt;/b&gt;
+## 3 content second line
+```
+
+---
+class: middle
+
+# 开发流程 (从 R 到 JSON 数据)
+
+R 环境：
+
+
+```r
+library(htmlwidgets)
+df1 &lt;- data.frame(
+  front = c("Title front",
+            "contentfront", 
+            "content second line"),
+  back =c("Title back",
+          "content back", 
+          "second line")
+)
+## 转换到 JSON
+htmlwidgets:::toJSON(df1)
+```
+
+&lt;img src="www/R_JSON.PNG" align="left"/&gt;
+
+---
+class: middle
+
+# 勇于尝试
+
+&lt;img src="www/newton.gif" align="right"/&gt;
+
+---
+class: middle
+
+# 为开源社区贡献
+
+&lt;img src="www/R_welcome.jpeg" alt="Example" width="350" height="500"&gt;
+&lt;img src="www/Welcome2.png" alt="Example2" width="380" height="400"&gt;
+
+---
+class: middle
+
+# 谢谢
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

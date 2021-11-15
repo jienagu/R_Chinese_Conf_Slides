@@ -1,0 +1,168 @@
+---
+title: "徒手开发零依赖 Htmlwidgets R 包"
+subtitle: "古杰娜"
+institute: "软件架构师 麦肯锡咨询公司"
+date: "2021/11/12"
+output:
+  xaringan::moon_reader:
+    css: [mckpam.css, zh-CN.css]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+
+---
+class: middle
+
+# Htmlwidgets R 包
+
+--
+### 提供了R语言链接Javascript库的接口
+
+--
+### 方便和丰富了R Markdown文档和Shiny Web应用程序的开发和共享分析成果
+
+--
+### 比如目前流行的 leaflet， plotly，等等
+
+---
+
+# 例子1: `faq`  <img src="www/faq_logo.png"  width="160px" align="right"/>
+
+Github repo: https://github.com/jienagu/faq
+
+```{r faq, eval=TRUE}
+library(faq)
+df <- data.frame(
+  question = c("Question1", "Question2", "Question3"),
+  answer = c("answer for <b>question1</b>", 
+             "question2 answer", 
+             "answer3")
+)
+print(df)
+```
+
+---
+
+# 例子1: `faq`  <img src="www/faq_logo.png"  width="160px" align="right"/>
+
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/faq)](https://cran.r-project.org/package=faq)
+
+```{r faq2, eval=TRUE, out.height='60%'}
+faq::faq(data = df, elementId = "faq",
+         faqtitle = "FAQs")
+```
+
+---
+
+# 例子2: `flashCard`  <img src="www/flashCard_hex.png"  width="160px" align="right"/>
+
+Github repo: https://github.com/jienagu/flashCard
+
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/flashCard)](https://cran.r-project.org/package=flashCard)
+
+```{r flashCard, eval=FALSE, out.height='60%'}
+library(flashCard)
+df1 <- data.frame(
+  front = c("Title front",
+            "contentfront", 
+            "content second line"),
+  back =c("Title back",
+          "content back", 
+          "second line")
+)
+flashCard(df1, elementId = "card", 
+          front_text_color = "white")
+```
+
+<img src="www/flashCard.gif"/>
+
+*更多例子： https://www.htmlwidgets.org/*
+
+---
+class: middle
+
+# Htmlwidgets 架构
+
+<img src="www/forestry_intro.png"/>
+
+*注：`forestry` 包（https://github.com/jienagu/forestry）是用于重塑更复杂的内嵌式的 JSON*
+
+---
+class: middle
+
+# 开发流程 
+
+1. 前端开发：https://codepen.io/Jienagu/pen/qBdNbVy
+2. 摘取相应的 JSON 数据格式
+3. 转换 JSON 到 R 环境  
+4. 用 htmlwidgets R 包(https://cran.r-project.org/web/packages/htmlwidgets/index.html) 建立基本框架
+5. 把开发好的前端代码 （js， css）放到 inst/htmlwidgets/lib 目录里 （https://github.com/jienagu/faq/tree/master/inst/htmlwidgets）
+6. 建立 R 数据链接 （https://github.com/jienagu/faq/blob/master/inst/htmlwidgets/faq.js#L25）
+7. 写测试
+
+---
+class: middle
+
+# 开发流程 (从 JSON 到 R 数据)
+
+JSON 数据：
+
+```{js example, eval=FALSE, out.height='60%'}
+var jsonData = {
+	"front": ["Title front", "contentfront", "content second line"],
+	"back": ["Title back", "<b>content back</b>", ""]
+}
+```
+
+R 环境：
+```{r ex, eval=TRUE}
+data.frame(rjson::fromJSON('{
+	"front": ["Title front", "contentfront", "content second line"],
+	"back": ["Title back", "<b>content back</b>", ""]
+}'))
+```
+
+---
+class: middle
+
+# 开发流程 (从 R 到 JSON 数据)
+
+R 环境：
+
+```{r ex3, eval=FALSE, out.width='80%'}
+library(htmlwidgets)
+df1 <- data.frame(
+  front = c("Title front",
+            "contentfront", 
+            "content second line"),
+  back =c("Title back",
+          "content back", 
+          "second line")
+)
+## 转换到 JSON
+htmlwidgets:::toJSON(df1)
+```
+
+<img src="www/R_JSON.PNG" align="left"/>
+
+---
+class: middle
+
+# 勇于尝试
+
+<img src="www/newton.gif" align="right"/>
+
+---
+class: middle
+
+# 为开源社区贡献
+
+<img src="www/R_welcome.jpeg" alt="Example" width="350" height="500">
+<img src="www/Welcome2.png" alt="Example2" width="380" height="400">
+
+---
+class: middle
+
+# 谢谢
