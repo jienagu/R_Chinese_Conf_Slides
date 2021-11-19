@@ -49,7 +49,7 @@ print(df)
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/faq)](https://cran.r-project.org/package=faq)
 
-```{r faq2, eval=TRUE, out.height='60%'}
+```{r faq2, eval=TRUE}
 faq::faq(data = df, elementId = "faq",
          faqtitle = "FAQs")
 ```
